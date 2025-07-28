@@ -175,6 +175,14 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // State for payment modal
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState({
+    productIdentity: '',
+    productName: '',
+    amount: 1000 // Default amount in paisa (Rs. 10)
+  });
+
   // Navigation links array for DRY code
   const navLinks = [
     { name: "Home", icon: "fa-house", link: "/dashboard" },
@@ -183,6 +191,34 @@ const Navbar = () => {
     { name: "Map", icon: "fa-map-location-dot", link: "/map" },
     { name: "Documents", icon: "fa-file-alt", link: "/documents" }
   ];
+
+  // Handle payment initiation
+  const initiatePayment = async () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      alert('Please log in to donate.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/api/payment/initiate',
+        paymentDetails,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data && response.data.payment_url) {
+        window.location.href = response.data.payment_url;
+      } else {
+        alert('Failed to initiate payment. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      alert('An error occurred while initiating payment.');
+    }
+  };
 
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return "Invalid Date";
@@ -204,6 +240,8 @@ const Navbar = () => {
     // Fall back to date format for older notifications
     return date.toLocaleDateString();
   };
+
+
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900">
@@ -387,8 +425,87 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
+
+              {/* Donate Button */}
+              <button
+                onClick={() => setIsPaymentModalOpen(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none"
+              >
+                Donate
+              </button>
             </div>
           </div>
+
+          {/* Payment Modal */}
+          {isPaymentModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96">
+                <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Make a Donation</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Order ID
+                    </label>
+                    <input
+                      type="text"
+                      value={paymentDetails.productIdentity}
+                      onChange={(e) => setPaymentDetails(prev => ({
+                        ...prev,
+                        productIdentity: e.target.value
+                      }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter order ID"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Order Name
+                    </label>
+                    <input
+                      type="text"
+                      value={paymentDetails.productName}
+                      onChange={(e) => setPaymentDetails(prev => ({
+                        ...prev,
+                        productName: e.target.value
+                      }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter order name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Amount (in Rs.)
+                    </label>
+                    <input
+                      type="number"
+                      value={paymentDetails.amount / 100}
+                      onChange={(e) => setPaymentDetails(prev => ({
+                        ...prev,
+                        amount: e.target.value * 100
+                      }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter amount"
+                      min="1"
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-3 mt-6">
+                    <button
+                      onClick={() => setIsPaymentModalOpen(false)}
+                      className="px-4 py-2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={initiatePayment}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                      Proceed to Pay
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Mobile Navigation Menu */}
           {isMenuOpen && (
