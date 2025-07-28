@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
+// Simple sanitize function to strip HTML tags
+function sanitizeInput(input) {
+  return input.replace(/<[^>]*>?/gm, "");
+}
+
 const Form = ({ onSubmit, isLoading, error, setEmail, setPassword }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -19,7 +24,7 @@ const Form = ({ onSubmit, isLoading, error, setEmail, setPassword }) => {
           className={`w-full px-4 py-2 border ${
             error.email ? "border-red-500" : "border-gray-300"
           } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setEmail(sanitizeInput(e.target.value))}
           required
         />
         {error.email && <p className="text-red-500 text-sm">{error.email}</p>}
@@ -38,7 +43,7 @@ const Form = ({ onSubmit, isLoading, error, setEmail, setPassword }) => {
           className={`w-full px-4 py-2 border ${
             error.password ? "border-red-500" : "border-gray-300"
           } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setPassword(sanitizeInput(e.target.value))}
           required
         />
         <button
