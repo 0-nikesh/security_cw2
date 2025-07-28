@@ -5,6 +5,11 @@ import { toast } from "react-toastify"; // Import toast
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../../assets/icon/login-logo.svg";
 
+// Simple sanitize function to strip HTML tags
+function sanitizeInput(input) {
+    return typeof input === 'string' ? input.replace(/<[^>]*>?/gm, "") : input;
+}
+
 const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -49,20 +54,21 @@ const Register = () => {
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
+        const sanitizedValue = sanitizeInput(type === "checkbox" ? checked : value);
         setFormData({
             ...formData,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: sanitizedValue,
         });
 
         if (name === "email") {
             setError((prev) => ({
                 ...prev,
-                email: validateEmail(value) ? "" : "Invalid email format",
+                email: validateEmail(sanitizedValue) ? "" : "Invalid email format",
             }));
         }
 
         if (name === "password") {
-            const strength = validatePasswordStrength(value);
+            const strength = validatePasswordStrength(sanitizedValue);
             setPasswordStrength(strength);
             setPasswordMessage(getPasswordStrengthMessage(strength));
             setError((prev) => ({
