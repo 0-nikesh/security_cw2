@@ -106,7 +106,7 @@ app.use("/api/guidances", guidanceRoute);
 app.use("/api/notifications", notificationRoute);
 app.use("/api/feedbacks", feedbackRoute);
 app.use("/api/government", governmentRoute);
-app.use("/api/payments", paymentRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // Create HTTP server and integrate Socket.IO
 const server = http.createServer(app);
