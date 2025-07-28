@@ -1,0 +1,63 @@
+Front Page
+-------------------
+1. Module code and name
+2. Project Title
+3. Coventry ID
+
+
+Body 
+-------------------
+1. Table of contents
+1. Introduction
+2. Aims and Objective
+3. Project Background
+4. Design 
+	a. Design pattern (MVVM) explain something about it with image.
+	b. Wireframes
+		Figma design of Wireframes Screenshots 
+	c. State management (if done) 
+		Bloc-explain and how we included it in that our project, 
+		view model ko folder structure ko screenshot halney and why we have done that
+5. Data and security
+	a. Cloud computing
+		aahile chai locally gari raxaum bhanera lekhney 
+	b. Data handling 
+		i. Local data : Hive and shared preferneces
+		ii. remote data :Using API
+5. Methodology and tools 
+	a. Agile 
+	b. tools (Vs code,flutter,nodejs,git etc)
+6. App monetization: 
+	how would you earn money from this app. 
+6. Conclusion 
+	- A summary of the key outcomes of the project 
+	and any lessons learned that can be applied to future projects.
+7. Reference List
+
+8. Appendix 
+   - include all your app screenshot from emulator
+	--include you app final ui here
+
+Note: 
+- Use APA 7 Referencing style
+- Word limit 1500 words (+- 10%)
+- pdf 
+- github readme file should include descriptions and all app screenshots 
+
+----------------------------------------------------------------------------------
+CW2
+
+just keep normal things like get all products type through HIVE, showing
+
+1. Github ko link
+2. Api backend github link
+3. Youtube video link:
+4. SRT file(): generate subtitle through climpchamp and edit the subtitle too checking the spelling
+5. Video length: 9:59
+7. My name is _ my coventry id is _ and my project title is _ it about _ 
+6. 1 to 3 minutes explain about your app by showing up in your mobile. show out functionality too showing the mondodb to how data is going too.
+8. 3-5 run in TABLET, just normal showing up the UI's dont explain in details like in mobile.
+9. Show the github link explaining commits, branch
+9. 5 to 7 show the testing : 10 bloc 10 unit(show the test coverage too(table)) and 10 widget test
+ 
+10. 7 to 10 minutes about the sensor minimun 2 sensor integration required.
