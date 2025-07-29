@@ -29,9 +29,22 @@ const Settings = () => {
     };
 
     const handleMFAEnabled = () => {
-        setMfaEnabled(true);
-        // Refresh user profile to get updated MFA status
-        fetchUserProfile();
+        setLoading(true);
+        fetchUserProfile()
+            .then(() => {
+                // After fetching, check the latest MFA status
+                if (user && user.mfaEnabled) {
+                    setMfaEnabled(true);
+                } else {
+                    setMfaEnabled(false);
+                }
+            })
+            .catch((err) => {
+                console.error('Error refreshing MFA status:', err);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     const disableMFA = async () => {
