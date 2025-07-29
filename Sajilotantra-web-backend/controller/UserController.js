@@ -14,7 +14,19 @@ const validatePassword = (password) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { fname, lname, email, password, isAdmin, bio, description } = req.body;
+    const { fname, lname, email, password, isAdmin, bio, description, gRecaptchaToken } = req.body;
+
+    // Verify reCAPTCHA
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    if (!gRecaptchaToken) {
+      return res.status(400).json({ message: "Captcha token missing" });
+    }
+    const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${gRecaptchaToken}`;
+    const axios = (await import("axios")).default;
+    const captchaRes = await axios.post(verificationUrl);
+    if (!captchaRes.data.success) {
+      return res.status(400).json({ message: "Captcha verification failed" });
+    }
 
     // Validate password
     if (!validatePassword(password)) {
