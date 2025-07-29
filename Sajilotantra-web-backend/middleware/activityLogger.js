@@ -20,7 +20,7 @@ const getActionFromMethod = (method) => {
     case 'PUT':
     case 'PATCH': return 'UPDATE';
     case 'DELETE': return 'DELETE';
-    default: return 'OTHER';
+    default: return 'VIEW'; // Use VIEW for unknown methods
   }
 };
 
@@ -67,7 +67,7 @@ const activityLogger = async (req, res, next) => {
         userId: req.user?._id || null,
         action: getActionFromMethod(req.method),
         entityType: getEntityTypeFromUrl(req.originalUrl),
-        entityId: req.params.id || null,
+        entityId: req.params?.id || null,
         ipAddress: ip,
         userAgent: req.headers['user-agent'] || '',
         status: res.statusCode < 400 ? 'SUCCESS' : 'FAILURE',

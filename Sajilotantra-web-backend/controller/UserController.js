@@ -170,6 +170,23 @@ const loginUser = async (req, res) => {
     user.lockUntil = undefined;
     await user.save();
 
+    // MFA: If user has mfaSecret, require MFA token
+    if (user.mfaSecret) {
+      const { mfaToken } = req.body;
+      if (!mfaToken) {
+        return res.status(401).json({ message: "MFA token required" });
+      }
+      const speakeasy = await import("speakeasy");
+      const verified = speakeasy.default.totp.verify({
+        secret: user.mfaSecret,
+        encoding: "base32",
+        token: mfaToken
+      });
+      if (!verified) {
+        return res.status(401).json({ message: "Invalid MFA token" });
+      }
+    }
+
     // Generate and return the token with user details
     res.json({
       token: generateToken(user._id, user.isAdmin), // Include isAdmin in the token
