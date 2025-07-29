@@ -9,36 +9,54 @@ import Layout from "./layout";
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [mfaToken, setMfaToken] = useState("");
+    const [mfaRequired, setMfaRequired] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState({ email: "", password: "" });
+    const [error, setError] = useState({ email: "", password: "", mfaToken: "" });
 
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError({ email: "", password: "" });
+        setError({ email: "", password: "", mfaToken: "" });
 
         if (!email || !password) {
             setError({
                 email: !email ? "Email is required" : "",
                 password: !password ? "Password is required" : "",
+                mfaToken: ""
+            });
+            return;
+        }
+
+        if (mfaRequired && (!mfaToken || mfaToken.length !== 6)) {
+            setError({
+                email: "",
+                password: "",
+                mfaToken: "Please enter a valid 6-digit MFA code"
             });
             return;
         }
 
         try {
             setIsLoading(true);
-            const response = await axios.post("http://localhost:3000/api/users/login", {
-                email,
-                password,
-            });
-
+            const loginData = { email, password };
+            // Add MFA token if required
+            if (mfaRequired && mfaToken) {
+                loginData.mfaToken = mfaToken;
+            }
+            const response = await axios.post("http://localhost:3000/api/users/login", loginData);
+            // If backend requests MFA, show the field
+            if (response.data.mfaRequired) {
+                setMfaRequired(true);
+                toast.info("Please enter your MFA code to complete login.");
+                return;
+            }
+            // If login is successful
             const { token, user } = response.data;
-
             localStorage.setItem("authToken", token);
             localStorage.setItem("user", JSON.stringify(user));
             toast.success("Login successful!");
-
             if (user.isAdmin) {
                 navigate("/admin");
             } else {
@@ -46,6 +64,30 @@ const Login = () => {
             }
         } catch (err) {
             console.error("Error during login:", err.message);
+            console.log("Full error response:", err.response?.data);
+            
+            // If backend requests MFA via error response
+            if (err.response?.data?.mfaRequired) {
+                setMfaRequired(true);
+                toast.info("Please enter your MFA code to complete login.");
+                return;
+            }
+            
+            // Check if the error message contains MFA requirement
+            if (err.response?.data?.message?.includes("MFA token required") || 
+                err.response?.data?.message?.includes("MFA") ||
+                err.response?.data?.message?.includes("token required")) {
+                setMfaRequired(true);
+                toast.info("Please enter your MFA code to complete login.");
+                return;
+            }
+            
+            // Handle MFA-specific errors
+            if (err.response?.status === 400 && err.response?.data?.message?.includes("MFA")) {
+                setError({ email: "", password: "", mfaToken: err.response.data.message });
+                return;
+            }
+            
             toast.error(err.response?.data?.message || err.message || "An error occurred.");
         } finally {
             setIsLoading(false);
@@ -67,6 +109,9 @@ const Login = () => {
                 error={error}
                 setEmail={setEmail}
                 setPassword={setPassword}
+                mfaRequired={mfaRequired}
+                setMfaToken={setMfaToken}
+                mfaToken={mfaToken}
             />
             <div className="mt-4 text-center">
                 <a
