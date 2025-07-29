@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
   lockUntil: { type: Date }, // Account lockout time
   passwordHistory: { type: [String], default: [] }, // Store previous hashed passwords
   passwordChangedAt: { type: Date }, // Track the last password change date
+  mfaSecret: { type: String, default: null }, // Google Authenticator MFA secret
 });
 
 const User = mongoose.model("User", UserSchema);
