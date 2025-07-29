@@ -182,7 +182,13 @@ const Dashboard = () => {
     };
 
     const handleImageUpload = (e) => {
-        setImageFiles([...imageFiles, ...e.target.files]);
+        const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+        const files = Array.from(e.target.files);
+        const validFiles = files.filter(file => allowedTypes.includes(file.type));
+        if (validFiles.length !== files.length) {
+            alert("Only PNG, JPG, and JPEG files are allowed.");
+        }
+        setImageFiles([...imageFiles, ...validFiles]);
     };
 
     const handleCreatePost = async (e) => {
@@ -322,6 +328,7 @@ const Dashboard = () => {
                                 <input
                                     type="file"
                                     multiple
+                                    accept=".png,.jpg,.jpeg"
                                     onChange={handleImageUpload}
                                     className="hidden"
                                     id="image-upload"
