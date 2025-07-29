@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Admin from "./core/private/admin"; // Admin panel
 import PrivateRoute from "./core/private/privateroute"; // PrivateRoute component
+import Settings from "./core/private/settings"; // Settings page
 import Dashboard from "./core/public/dashboard/dashboard";
 import Documents from "./core/public/documents/document";
 import GuidanceDetail from "./core/public/documents/guidance_details";
@@ -40,6 +41,7 @@ function App() {
         <Route path="/government/:id" element={<GovernmentProfileDetail />} />
 
         {/* Private Routes */}
+        <Route path="/settings" element={<Settings />} />
 
         <Route
           path="/admin"
