@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify"; // Import toast
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../../assets/icon/login-logo.svg";
+import ReCAPTCHA from "react-google-recaptcha";
 
 // Simple sanitize function to strip HTML tags
 function sanitizeInput(input) {
@@ -43,6 +44,7 @@ const Register = () => {
         password: "",
         isAdmin: false,
     });
+    const [captchaToken, setCaptchaToken] = useState("");
     const [otp, setOtp] = useState(""); // State to store the OTP entered by the user
     const [isOtpSent, setIsOtpSent] = useState(false); // State to check if OTP has been sent
     const [userId, setUserId] = useState(""); // Store the user ID returned from the backend
@@ -97,12 +99,23 @@ const Register = () => {
             });
             return;
         }
+        if (!captchaToken) {
+            toast.error("Please complete the CAPTCHA.");
+            return;
+        }
+
+        console.log("CAPTCHA Token:", captchaToken); // Debug log
 
         try {
             setIsLoading(true);
 
-            // Send registration request to backend
-            const response = await axios.post("http://localhost:3000/api/users/register", formData);
+            // Send registration request to backend with captchaToken
+            const response = await axios.post("http://localhost:3000/api/users/register", {
+                ...formData,
+                gRecaptchaToken: captchaToken  // Backend expects gRecaptchaToken
+            });
+
+            console.log("Registration response:", response.data); // Debug log
 
             // If OTP is sent successfully
             setIsOtpSent(true);
@@ -239,10 +252,22 @@ const Register = () => {
                                 </ul>
                             </div>
 
+                            <div className="mb-6 flex justify-center">
+                                <ReCAPTCHA
+                                    sitekey="6LdnjJMrAAAAAMjuKY86efvGeVy4mQVmsU3fZ0jf"
+                                    onChange={(token) => {
+                                        console.log("CAPTCHA token received:", token);
+                                        setCaptchaToken(token);
+                                    }}
+                                    onExpired={() => {
+                                        console.log("CAPTCHA expired");
+                                        setCaptchaToken("");
+                                    }}
+                                />
+                            </div>
                             <button
                                 type="submit"
-                                className={`w-full bg-blue-600 py-2 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
-                                    }`}
+                                className={`w-full bg-blue-600 py-2 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                                 disabled={isLoading}
                             >
                                 {isLoading ? "Sending OTP..." : "Register"}
