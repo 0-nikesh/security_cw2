@@ -21,7 +21,7 @@ test.describe('Documents Page Tests', () => {
     test('should display document cards', async ({ page }) => {
         // Debugging: Log found elements
         const documentCards = await page.locator('.shadow-lg').allTextContents();
-        console.log('Documents Found:', documentCards);
+        //console.log('Documents Found:', documentCards);
 
         // Ensure document cards are visible
         await expect(page.locator('text=Samsung S24 Ultra').first()).toBeVisible();

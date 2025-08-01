@@ -1,0 +1,65 @@
+Session Management
+SQL XSS Prevention
+Password Expiry
+Admin User
+Payment
+Password Security
+Encryption
+Password Expiry
+Frontend Changes
+Activity Logging
+Penetration Testing
+
+Additional (Ramro Marks)
+Captcha 
+CSRF
+MFA
+
+table of abbreviations: full forms
+
+introduction and system design(Architecture)
+
+software details: frontend package, backend dependencies, github screenshots
+
+security by design princples: 
+    cors 
+    preventing from //console.log
+    not letting source code to be seen in edge
+    fixed type of request, put, post and other 
+
+//the checklist: to give web app features, audit trails, and user/admin acess, session management, 
+user information encryption, extra measures like https, sanitize data(xss), hide src files, xsrf token, 
+
+Making sajilotantra secure
+   ------ password: 
+        SHOW screenshot from both client and serverside
+        and real time integration showing UI 
+        implementation of password Expiry
+        brute force attack (5 times,1 min lock)
+        hashed password
+
+    -------------aduit trail: (remaining)
+        user tracking what they do, 
+        show screenshot of logs form mongo and admin panel
+
+    -----------user authentication: 
+        show user based role, 
+        screenshots of user and admin middleware
+
+    session management: 
+        cookies and jwt , referesh and access token
+    
+    -------Encypted informations: 
+        like passwords, and other user details to be encrypted 
+
+    Extra security features: 
+        -----HTTPS in both front and backend 
+        -----Input sanitization (XSS)
+        CSRF token
+        -----file extension( permission to only upload png, jpg, and jpeg files)
+        -----MFA 
+        captcha if possible
+        -----NO SQL 
+
+    ------Secure Payment:
+        kHatli integration
