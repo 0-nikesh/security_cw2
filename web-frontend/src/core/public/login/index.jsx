@@ -64,7 +64,7 @@ const Login = () => {
             }
         } catch (err) {
             console.error("Error during login:", err.message);
-            console.log("Full error response:", err.response?.data);
+            //console.log("Full error response:", err.response?.data);
             
             // If backend requests MFA via error response
             if (err.response?.data?.mfaRequired) {

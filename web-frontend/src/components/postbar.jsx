@@ -9,7 +9,7 @@ function Postbar() {
     };
 
     const handlePostClick = () => {
-        console.log("Posted:", input);
+        //console.log("Posted:", input);
         setInput(""); // Clear input after posting
     };
 

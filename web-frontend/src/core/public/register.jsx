@@ -104,7 +104,7 @@ const Register = () => {
             return;
         }
 
-        console.log("CAPTCHA Token:", captchaToken); // Debug log
+        //console.log("CAPTCHA Token:", captchaToken); // Debug log
 
         try {
             setIsLoading(true);
@@ -115,7 +115,7 @@ const Register = () => {
                 gRecaptchaToken: captchaToken  // Backend expects gRecaptchaToken
             });
 
-            console.log("Registration response:", response.data); // Debug log
+            //console.log("Registration response:", response.data); // Debug log
 
             // If OTP is sent successfully
             setIsOtpSent(true);
@@ -256,11 +256,11 @@ const Register = () => {
                                 <ReCAPTCHA
                                     sitekey="6LdnjJMrAAAAAMjuKY86efvGeVy4mQVmsU3fZ0jf"
                                     onChange={(token) => {
-                                        console.log("CAPTCHA token received:", token);
+                                        //console.log("CAPTCHA token received:", token);
                                         setCaptchaToken(token);
                                     }}
                                     onExpired={() => {
-                                        console.log("CAPTCHA expired");
+                                        //console.log("CAPTCHA expired");
                                         setCaptchaToken("");
                                     }}
                                 />

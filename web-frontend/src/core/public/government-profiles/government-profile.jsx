@@ -12,7 +12,7 @@
 //         try {
 //             const token = localStorage.getItem("authToken");
 //             if (!token) {
-//                 console.log("No token found. Please log in.");
+//                 //console.log("No token found. Please log in.");
 //                 return;
 //             }
 
