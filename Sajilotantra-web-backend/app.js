@@ -4,11 +4,19 @@ import AdminJS, { ComponentLoader } from "adminjs"; // Correct import
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import mongoose from "mongoose";
+import helmet from "helmet";
+import xss from "xss-clean";
+import mongoSanitize from "express-mongo-sanitize";
+import hpp from "hpp";
+import cookieParser from "cookie-parser";
 import http from 'http'; // Built-in Node module to create an HTTP server
 import path from 'path';
 import { Server } from 'socket.io';
 import { fileURLToPath } from 'url';
 import connectDB from "./config/db.js";
+import activityLogger from "./middleware/activityLogger.js";
+import { noSqlSanitizer, strictNoSqlProtection } from "./middleware/customMongoSanitize.js";
 
 //models import
 import Feedback from "./model/Feedback.js";
@@ -17,6 +25,7 @@ import Guidance from "./model/Guidance.js";
 import Notification from "./model/Notification.js";
 import Post from "./model/Post.js";
 import User from "./model/User.js";
+import ActivityLog from "./model/ActivityLog.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const currentDir = path.dirname(__filename);
@@ -25,9 +34,22 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(express.json());
+
+// Security middleware
+app.use(helmet()); // Set various HTTP headers for security
+app.use(xss()); // Sanitize user input coming from POST body, GET queries, and url params
+app.use(noSqlSanitizer); // Advanced NoSQL injection prevention with logging
+app.use(hpp()); // Prevent HTTP Parameter Pollution
+app.use(cookieParser());
+
+// Body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' })); // Limit body size to 10kb
+
+// Activity logging middleware
+app.use(activityLogger);
+
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: [ "http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -78,6 +100,7 @@ const adminJs = new AdminJS({
     { resource: Notification },
     { resource: GovernmentProfile },
     { resource: Feedback },
+    { resource: ActivityLog },
   ],
   rootPath: '/admin',
   dashboard: {
@@ -91,6 +114,7 @@ const adminRouter = AdminJSExpress.buildRouter(adminJs);
 // Mount AdminJS router
 app.use(adminJs.options.rootPath, adminRouter);
 
+
 import feedbackRoute from "./routes/FeedbackRoute.js";
 import guidanceRoute from "./routes/GuidanceRoute.js";
 import notificationRoute from "./routes/NotificationRoute.js";
@@ -99,6 +123,9 @@ import postRoute from "./routes/PostRoute.js";
 import governmentRoute from "./routes/GovernmentProfileRoute.js";
 import userRoute from "./routes/UserRoute.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import activityLogRoutes from "./routes/activityLogRoutes.js";
+import mfaRoute from "./routes/MfaRoute.js";
+
 
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
@@ -107,6 +134,8 @@ app.use("/api/notifications", notificationRoute);
 app.use("/api/feedbacks", feedbackRoute);
 app.use("/api/government", governmentRoute);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/activity-logs", activityLogRoutes);
+app.use("/api/mfa", mfaRoute);
 
 // Create HTTP server and integrate Socket.IO
 const server = http.createServer(app);
